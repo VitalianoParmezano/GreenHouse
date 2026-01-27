@@ -1,5 +1,6 @@
 package com.example.greenhouse;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -65,16 +66,16 @@ public class MainActivity extends AppCompatActivity {
 
             btn.setLayoutParams(params);
 
-            // 3. Обробка натискання
+            // Обробка натискання
             btn.setOnClickListener(v -> {
                 Button clickedBtn = (Button) v;
                 int index = (int) clickedBtn.getTag();
 
-                // Змінюємо колір при натисканні
-                //clickedBtn.setBackgroundColor(Color.GREEN);
-                Toast.makeText(MainActivity.this, "Натиснуто: " + (index+1), Toast.LENGTH_SHORT).show();
 
-
+                // Початок нової активності
+                Intent intent = new Intent(MainActivity.this, ProgramingActivity.class);
+                intent.putExtra("index", index);
+                MainActivity.this.startActivity(intent);
                 // Тут твій код для відправки на STM32/ESP32
             });
 
