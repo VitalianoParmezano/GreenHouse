@@ -13,8 +13,12 @@
         android:theme="@style/Theme.GreenHouse"
         tools:targetApi="31">
         <activity
+            android:name=".ProgramingActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="sensorLandscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

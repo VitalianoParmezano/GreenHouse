@@ -5,17 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <GridLayout
-        android:id="@+id/main_grid"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:rowCount="2"
-        android:columnCount="14">
-
-
-
-    </GridLayout>
+    tools:context=".ProgramingActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>
