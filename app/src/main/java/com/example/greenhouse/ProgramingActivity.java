@@ -20,13 +20,19 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.greenhouse.additionalClasses.LampItem;
+
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProgramingActivity extends AppCompatActivity {
     private static final String TAG = "Programming Activity";
     Boolean uniteFlag = false;
     Button btn_unite;
     Button btn_apart; // <--- Додаємо сюди
+
+    private final List<LampItem> lamps = new ArrayList<>();
 
 
 
@@ -50,15 +56,17 @@ public class ProgramingActivity extends AppCompatActivity {
 
         updateButtonsColor();
 
+
         btn_unite.setOnClickListener(v -> {
-            uniteFlag = true;       // Ставимо прапорець в True
-            updateButtonsColor();   // Оновлюємо вигляд кнопок
+            uniteFlag = true;
+            updateButtonsColor();
+
         });
 
-        // 4. Натискання на "Окремо"
         btn_apart.setOnClickListener(v -> {
-            uniteFlag = false;      // Ставимо прапорець в False
-            updateButtonsColor();   // Оновлюємо вигляд кнопок
+            uniteFlag = false;
+            updateButtonsColor();
+
         });
 
 
@@ -78,41 +86,46 @@ public class ProgramingActivity extends AppCompatActivity {
         int rowCount = gridLayout.getRowCount();
         int totalCount = columnCount * rowCount;
 
+        /// Цикл заповнення!
+        // Цикл заповнення!
+        // Цикл заповнення сітки
         for (int i = 0; i < totalCount; i++) {
             View itemView = inflater.inflate(R.layout.item_light_change, gridLayout, false);
             int real_id = i + 1;
 
-            // Знаходимо елементи
-            TextView tvBlue = itemView.findViewById(R.id.item_tv_blue);
-            TextView tvRed = itemView.findViewById(R.id.item_tv_red);
-            TextView tvLampNum = itemView.findViewById(R.id.item_tv_lamp_number);
-            View lampShape = itemView.findViewById(R.id.item_lamp);
-            SeekBar sbBlue = itemView.findViewById(R.id.item_blue_seekbar);
-            SeekBar sbRed = itemView.findViewById(R.id.item_red_seekbar);
+            LampItem lamp = new LampItem(itemView);
+            lamps.add(lamp);
 
-            tvLampNum.setText(String.valueOf(real_id));
-
+            lamp.getTvLampNum().setText(String.valueOf(real_id));
 
             if (i % columnCount == 1) {
-
+                // Віддзеркалення для парних рядків/стовпчиків (залежно від вашої логіки)
                 itemView.setScaleX(-1f);
 
-                tvBlue.setScaleX(-1f);
-                tvRed.setScaleX(-1f);
-                tvLampNum.setScaleX(-1f);
-
-
+                // Перевертаємо текст назад, щоб він читався нормально
+                lamp.getTvBlue().setScaleX(-1f);
+                lamp.getTvRed().setScaleX(-1f);
+                lamp.getTvLampNum().setScaleX(-1f);
             }
 
-            tvBlue.setText(sbBlue.getProgress() + " %");
-            tvRed.setText(sbRed.getProgress() + " %");
+            lamp.getTvBlue().setText(lamp.getSbBlue().getProgress() + " %");
+            lamp.getTvRed().setText(lamp.getSbRed().getProgress() + " %");
 
-            // 2. Слухач для СИНЬОГО повзунка
-            sbBlue.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            lamp.getSbBlue().setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    // Цей метод спрацьовує постійно, поки ти тягнеш повзунок
-                    tvBlue.setText(progress + " %");
+                    lamp.getTvBlue().setText(progress + " %");
+
+                    // ЛОГІКА "СПІЛЬНО": Синхронізуємо інші
+                    if (uniteFlag && fromUser) {
+                        for (LampItem otherLamp : lamps) {
+                            if (otherLamp != lamp) {
+                                otherLamp.getSbBlue().setProgress(progress);
+                                otherLamp.getTvBlue().setText(progress + " %");
+                            }
+                        }
+                    }
                 }
 
                 @Override
@@ -120,42 +133,65 @@ public class ProgramingActivity extends AppCompatActivity {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    Log.d(TAG, "Blue, shelf " + shelf_number + ". Lamp: "+ real_id + ". Percent: " + seekBar.getProgress());
-                    changeLampColor(sbBlue.getProgress() ,sbRed.getProgress(), lampShape);
+                    Log.d(TAG, "Blue stop. Shelf " + shelf_number + ", Lamp " + real_id);
+
+                    if (uniteFlag) {
+                        for (LampItem item : lamps) {
+                            changeLampColor(item.getSbBlue().getProgress(), item.getSbRed().getProgress(), item.getLampView());
+                        }
+                    } else {
+                        changeLampColor(lamp.getSbBlue().getProgress(), lamp.getSbRed().getProgress(), lamp.getLampView());
+                    }
                 }
             });
 
-            // 3. Слухач для ЧЕРВОНОГО повзунка
-            sbRed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            lamp.getSbRed().setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    tvRed.setText(progress + " %");
+                    lamp.getTvRed().setText(progress + " %");
+
+                    if (uniteFlag && fromUser) {
+                        for (LampItem otherLamp : lamps) {
+                            if (otherLamp != lamp) {
+                                otherLamp.getSbRed().setProgress(progress);
+                                otherLamp.getTvRed().setText(progress + " %");
+                            }
+                        }
+                    }
                 }
 
                 @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
-                    lampShape.getBackgroundTintList();
-                }
+                public void onStartTrackingTouch(SeekBar seekBar) { }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    Log.d(TAG, "Red, shelf " + shelf_number + ". Lamp: "+ real_id + ". Percent: " + seekBar.getProgress());
-                    changeLampColor(sbBlue.getProgress() ,sbRed.getProgress(), lampShape);
+                    Log.d(TAG, "Red stop. Shelf " + shelf_number + ", Lamp " + real_id);
+
+                    if (uniteFlag) {
+                        for (LampItem item : lamps) {
+                            changeLampColor(item.getSbBlue().getProgress(), item.getSbRed().getProgress(), item.getLampView());
+                        }
+                    } else {
+                        changeLampColor(lamp.getSbBlue().getProgress(), lamp.getSbRed().getProgress(), lamp.getLampView());
+                    }
                 }
             });
 
-            // --- КІНЕЦЬ КОДУ ДЛЯ ПОВЗУНКІВ ---
-            // Додаємо params (як обговорювали раніше)
+            // 5. Параметри розміщення в Grid
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 10f);
             params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
             params.width = 0;
-            params.setMargins(20,0,20,10);
+            params.setMargins(20, 0, 20, 10);
             itemView.setLayoutParams(params);
 
             gridLayout.addView(itemView);
         }
     }
+
+
+
     private void changeLampColor(int bluePercent, int redPercent, View lamp) {
         Drawable background = lamp.getBackground();
 
