@@ -2,6 +2,9 @@ package com.example.greenhouse;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -99,6 +102,7 @@ public class ProgramingActivity extends AppCompatActivity {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     Log.d(TAG, "Blue, shelf " + shelf_number + ". Lamp: "+ real_id + ". Percent: " + seekBar.getProgress());
+                    changeLampColor(sbBlue.getProgress() ,sbRed.getProgress(), lampShape);
                 }
             });
 
@@ -110,11 +114,14 @@ public class ProgramingActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onStartTrackingTouch(SeekBar seekBar) { }
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                    lampShape.getBackgroundTintList();
+                }
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     Log.d(TAG, "Red, shelf " + shelf_number + ". Lamp: "+ real_id + ". Percent: " + seekBar.getProgress());
+                    changeLampColor(sbBlue.getProgress() ,sbRed.getProgress(), lampShape);
                 }
             });
 
@@ -129,9 +136,24 @@ public class ProgramingActivity extends AppCompatActivity {
 
             gridLayout.addView(itemView);
         }
+    }
+    private void changeLampColor(int bluePercent, int redPercent, View lamp) {
+        Drawable background = lamp.getBackground();
 
+        if (background instanceof GradientDrawable) {
+            GradientDrawable shape = (GradientDrawable) background;
+            shape.mutate();
 
+            int minLevel = 85;
+            int range = 255 - minLevel;
+            //Формула: База + (Відсоток * Доступний_Діапазон / 100)
+            int r = minLevel + (redPercent * range) / 100;
 
+            int b = minLevel + (bluePercent * range) / 100;
 
+            int g = minLevel;
+
+            shape.setColor(Color.rgb(r, g, b));
+        }
     }
 }
