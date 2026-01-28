@@ -16,7 +16,6 @@ import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -25,6 +24,10 @@ import java.text.MessageFormat;
 
 public class ProgramingActivity extends AppCompatActivity {
     private static final String TAG = "Programming Activity";
+    Boolean uniteFlag = false;
+    Button btn_unite;
+    Button btn_apart; // <--- Додаємо сюди
+
 
 
     @SuppressLint("SetTextI18n")
@@ -42,7 +45,23 @@ public class ProgramingActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int shelf_number = intent.getIntExtra("index", -1) + 1;
 
-        
+        btn_unite = findViewById(R.id.btn_programming_unite);
+        btn_apart = findViewById(R.id.btn_programming_apart);
+
+        updateButtonsColor();
+
+        btn_unite.setOnClickListener(v -> {
+            uniteFlag = true;       // Ставимо прапорець в True
+            updateButtonsColor();   // Оновлюємо вигляд кнопок
+        });
+
+        // 4. Натискання на "Окремо"
+        btn_apart.setOnClickListener(v -> {
+            uniteFlag = false;      // Ставимо прапорець в False
+            updateButtonsColor();   // Оновлюємо вигляд кнопок
+        });
+
+
         Log.d(TAG, "onCreate: index is: " + shelf_number);
 
         Button btn_back = findViewById(R.id.btn_programming_back);
@@ -156,4 +175,21 @@ public class ProgramingActivity extends AppCompatActivity {
             shape.setColor(Color.rgb(r, g, b));
         }
     }
+
+
+    private void updateButtonsColor() {
+        if (uniteFlag) {
+
+            btn_unite.setBackgroundResource(R.drawable.shape_btn);
+            btn_apart.setBackgroundResource(R.drawable.shape_btn_unchoosed_mod);
+
+
+        } else {
+
+            btn_unite.setBackgroundResource(R.drawable.shape_btn_unchoosed_mod);
+            btn_apart.setBackgroundResource(R.drawable.shape_btn);
+
+        }
+    }
+
 }
