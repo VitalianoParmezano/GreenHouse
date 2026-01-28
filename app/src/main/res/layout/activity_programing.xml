@@ -34,13 +34,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="100dp"
         android:rowCount="4"
         android:columnCount="2"/>
 
-
-    <!--        android:thumbTint="#f00"-->
-    <!--        android:progressBackgroundTint="#0f0"-->
-    <!--        android:progressTint="#FF7A7A"-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
