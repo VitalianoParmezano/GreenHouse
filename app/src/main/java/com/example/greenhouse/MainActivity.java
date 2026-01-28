@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
         int columnCount = mainGrid.getColumnCount();
         int rowCount = mainGrid.getRowCount();
-        Integer totalButtons = 28;
+        Integer totalButtons = columnCount * rowCount;
 
         // Цикл створення кнопок
         for (int i = 0; i < totalButtons; i++) {
@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
             // Обробка натискання
             btn.setOnClickListener(v -> {
                 Button clickedBtn = (Button) v;
+                btn.setTextColor(R.color.text_color);
                 int index = (int) clickedBtn.getTag();
 
 
