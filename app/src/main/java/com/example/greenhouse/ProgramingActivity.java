@@ -21,6 +21,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.greenhouse.additionalClasses.LampItem;
+import com.example.greenhouse.data_base.LampEntity;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.List;
 
 public class ProgramingActivity extends AppCompatActivity {
     private static final String TAG = "Programming Activity";
+    private ProgramingViewModel viewModel;
     Boolean uniteFlag = false;
     Button btn_unite;
     Button btn_apart; // <--- Додаємо сюди
@@ -51,6 +53,16 @@ public class ProgramingActivity extends AppCompatActivity {
         Intent intent = getIntent();
         int shelf_number = intent.getIntExtra("index", -1) + 1;
 
+        viewModel = new androidx.lifecycle.ViewModelProvider(this).get(ProgramingViewModel.class);
+        viewModel.initDatabase(MainPreferences.TotalShelf);
+
+        viewModel.getLampsForShelf(shelf_number).observe(this, lampEntities -> {
+            // Цей код спрацює, коли дані прийдуть з бази
+            if (lampEntities != null && !lampEntities.isEmpty()) {
+                updateUIWithData(lampEntities);
+            }
+        });
+
         btn_unite = findViewById(R.id.btn_programming_unite);
         btn_apart = findViewById(R.id.btn_programming_apart);
 
@@ -61,6 +73,27 @@ public class ProgramingActivity extends AppCompatActivity {
             uniteFlag = true;
             updateButtonsColor();
 
+//            if (!lamps.isEmpty()) {
+//                LampItem masterLamp = lamps.get(0);
+//
+//                // Запам'ятовуємо значення "Командира"
+//                int masterBlue = masterLamp.getSbBlue().getProgress();
+//                int masterRed = masterLamp.getSbRed().getProgress();
+//
+//                // Пробігаємося по всіх інших лампах і ставимо їм такі ж значення
+//                for (LampItem item : lamps) {
+//                    // Оновлюємо повзунки
+//                    item.getSbBlue().setProgress(masterBlue);
+//                    item.getSbRed().setProgress(masterRed);
+//
+//                    // Оновлюємо текст відсотків
+//                    item.getTvBlue().setText(masterBlue + " %");
+//                    item.getTvRed().setText(masterRed + " %");
+//
+//                    // Оновлюємо колір самої "лампочки" на екрані
+//                    changeLampColor(masterBlue, masterRed, item.getLampView());
+//                        }
+//                    }
         });
 
         btn_apart.setOnClickListener(v -> {
@@ -135,6 +168,16 @@ public class ProgramingActivity extends AppCompatActivity {
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     Log.d(TAG, "Blue stop. Shelf " + shelf_number + ", Lamp " + real_id);
 
+                    LampEntity entity = (LampEntity) lamp.getLampView().getTag();
+                    if (entity != null) {
+                        // Оновлюємо дані в об'єкті
+                        entity.blueValue = lamp.getSbBlue().getProgress();
+                        entity.redValue = lamp.getSbRed().getProgress();
+
+                        // Відправляємо в базу
+                        viewModel.updateLamp(entity);
+                    }
+
                     if (uniteFlag) {
                         for (LampItem item : lamps) {
                             changeLampColor(item.getSbBlue().getProgress(), item.getSbRed().getProgress(), item.getLampView());
@@ -167,6 +210,16 @@ public class ProgramingActivity extends AppCompatActivity {
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
                     Log.d(TAG, "Red stop. Shelf " + shelf_number + ", Lamp " + real_id);
+
+                    LampEntity entity = (LampEntity) lamp.getLampView().getTag();
+                    if (entity != null) {
+                        // Оновлюємо дані в об'єкті
+                        entity.blueValue = lamp.getSbBlue().getProgress();
+                        entity.redValue = lamp.getSbRed().getProgress();
+
+                        // Відправляємо в базу
+                        viewModel.updateLamp(entity);
+                    }
 
                     if (uniteFlag) {
                         for (LampItem item : lamps) {
@@ -225,6 +278,29 @@ public class ProgramingActivity extends AppCompatActivity {
             btn_unite.setBackgroundResource(R.drawable.shape_btn_unchoosed_mod);
             btn_apart.setBackgroundResource(R.drawable.shape_btn);
 
+        }
+    }
+
+    private void updateUIWithData(List<LampEntity> dataFromDb) {
+        // dataFromDb - це список з бази (Entity)
+        // lamps - це ваш список візуальних елементів (LampItem)
+
+        if (lamps.size() != dataFromDb.size()) return; // Захист
+
+        for (int i = 0; i < lamps.size(); i++) {
+            LampItem uiLamp = lamps.get(i);
+            LampEntity dbLamp = dataFromDb.get(i);
+
+            // Зберігаємо ID з бази в UI об'єкт (можна додати поле id в LampItem,
+            // або використовувати tag, щоб знати кого оновлювати)
+            uiLamp.getLampView().setTag(dbLamp);
+
+            // Оновлюємо повзунки (це викличе ваші Listeners!)
+            // Щоб уникнути зациклення (update -> listener -> update),
+            // можна тимчасово зняти лісенери або перевіряти fromUser.
+
+            uiLamp.getSbBlue().setProgress(dbLamp.blueValue);
+            uiLamp.getSbRed().setProgress(dbLamp.redValue);
         }
     }
 
