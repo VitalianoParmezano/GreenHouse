@@ -73,27 +73,32 @@ public class ProgramingActivity extends AppCompatActivity {
             uniteFlag = true;
             updateButtonsColor();
 
-//            if (!lamps.isEmpty()) {
-//                LampItem masterLamp = lamps.get(0);
-//
-//                // Запам'ятовуємо значення "Командира"
-//                int masterBlue = masterLamp.getSbBlue().getProgress();
-//                int masterRed = masterLamp.getSbRed().getProgress();
-//
-//                // Пробігаємося по всіх інших лампах і ставимо їм такі ж значення
-//                for (LampItem item : lamps) {
-//                    // Оновлюємо повзунки
-//                    item.getSbBlue().setProgress(masterBlue);
-//                    item.getSbRed().setProgress(masterRed);
-//
-//                    // Оновлюємо текст відсотків
-//                    item.getTvBlue().setText(masterBlue + " %");
-//                    item.getTvRed().setText(masterRed + " %");
-//
-//                    // Оновлюємо колір самої "лампочки" на екрані
-//                    changeLampColor(masterBlue, masterRed, item.getLampView());
-//                        }
-//                    }
+            if (!lamps.isEmpty()) {
+                List<LampEntity> batchUpdateList = new ArrayList<>();
+
+                LampItem masterLamp = lamps.get(0);
+                int currentBlue = masterLamp.getSbBlue().getProgress();
+                int currentRed = masterLamp.getSbRed().getProgress();
+
+                for (LampItem item : lamps) {
+                    item.getSbBlue().setProgress(currentBlue);
+                    item.getSbRed().setProgress(currentRed);
+                    item.getTvBlue().setText(currentBlue + " %");
+                    item.getTvRed().setText(currentRed + " %");
+                    changeLampColor(currentBlue, currentRed, item.getLampView());
+
+                    LampEntity entity = (LampEntity) item.getLampView().getTag();
+
+                    if (entity != null) {
+                        entity.blueValue = currentBlue;
+                        entity.redValue = currentRed;
+
+                        batchUpdateList.add(entity);
+                    }
+                }
+
+                viewModel.saveAllLamps(batchUpdateList);
+            }
         });
 
         btn_apart.setOnClickListener(v -> {
@@ -143,8 +148,8 @@ public class ProgramingActivity extends AppCompatActivity {
                 lamp.getTvLampNum().setScaleX(-1f);
             }
 
-            lamp.getTvBlue().setText(lamp.getSbBlue().getProgress() + " %");
-            lamp.getTvRed().setText(lamp.getSbRed().getProgress() + " %");
+//            lamp.getTvBlue().setText(lamp.getSbBlue().getProgress() + " %");
+//            lamp.getTvRed().setText(lamp.getSbRed().getProgress() + " %");
 
 
             lamp.getSbBlue().setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -173,24 +178,17 @@ public class ProgramingActivity extends AppCompatActivity {
                     int currentRed = lamp.getSbRed().getProgress();
 
                     if (uniteFlag) {
-                        // === РЕЖИМ СПІЛЬНО ===
-                        // Створюємо список для збереження
                         List<LampEntity> batchUpdateList = new ArrayList<>();
 
-                        // Проходимо по ВСІХ лампах на екрані
                         for (LampItem item : lamps) {
-                            // Дістаємо Entity, прив'язану до цієї лампи
                             LampEntity entity = (LampEntity) item.getLampView().getTag();
 
                             if (entity != null) {
-                                // Оновлюємо дані в об'єкті Entity новими значеннями
                                 entity.blueValue = currentBlue;
-                                entity.redValue = currentRed; // Червоний теж має синхронізуватися
+                                entity.redValue = currentRed;
 
-                                // Додаємо в список на відправку
                                 batchUpdateList.add(entity);
 
-                                // Оновлюємо візуал (колір лампочки на екрані)
                                 changeLampColor(currentBlue, currentRed, item.getLampView());
                             }
                         }
