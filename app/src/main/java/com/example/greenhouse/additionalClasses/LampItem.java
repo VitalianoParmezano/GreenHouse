@@ -1,9 +1,14 @@
 package com.example.greenhouse.additionalClasses;
 
+import android.util.JsonWriter;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import com.example.greenhouse.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
 
 public class LampItem {
     // Поля елементів
@@ -37,4 +42,6 @@ public class LampItem {
     public SeekBar getSbRed() { return sbRed; }
 
     public View getLampView() { return lampView; }
+
+
 }

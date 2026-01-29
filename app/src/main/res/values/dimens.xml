@@ -5,5 +5,6 @@
     <dimen name="lamp_size">60dp</dimen>
 
     <integer name="server_port">8888</integer>
+    <integer name="lamps_for_one_shelf">8</integer>
 
 </resources>

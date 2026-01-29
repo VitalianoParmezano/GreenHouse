@@ -8,16 +8,15 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 
-import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.example.greenhouse.web_socket.WebSocketManager;
 import com.example.greenhouse.R;
 
 public class WebSocketService extends Service {
-    private static final String TAG = "WebSocketService";
+
     private static final String CHANNEL_ID = "WS_Server_Channel";
     private static final int NOTIFICATION_ID = 1;
-    private MyWebSocketServer server;
 
     @Override
     public void onCreate() {
@@ -27,43 +26,28 @@ public class WebSocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // Створюємо сповіщення для Foreground Service
+        // Створення сповіщення
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("WebSocket Server")
-                .setContentText("Сервер теплиці запущено")
-                .setSmallIcon(android.R.drawable.ic_dialog_info) // Заміни на свою іконку
+                .setContentText("Сервер теплиці працює")
+                .setSmallIcon(android.R.drawable.stat_sys_upload)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
 
-        // Запускаємо сервіс у передньому плані
+        // Важливо: для Android 14+ додайте type у маніфест!
         startForeground(NOTIFICATION_ID, notification);
 
-        // Ініціалізація та запуск сервера (порт 8887)
-        if (server == null) {
-            int port = getResources().getInteger(R.integer.server_port);
-            server = new MyWebSocketServer(port, message -> {
-                android.util.Log.d(TAG, "Отримано: " + message);
-            });
-            server.setReuseAddr(true); // ДОДАЙ ЦЕЙ РЯДОК
-            server.start();
-            android.util.Log.d(TAG, "Сервер запущено на порту: " + port);
-        } else {
-            android.util.Log.d(TAG, "Сервер уже працює, ігнорую повторний запуск");
-        }
+        // Отримуємо порт із ресурсів через контекст сервісу
+        int port = getResources().getInteger(R.integer.server_port);
+        WebSocketManager.getInstance().startServer(port);
 
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
+        WebSocketManager.getInstance().stopServer();
         super.onDestroy();
-        if (server != null) {
-            try {
-                server.stop();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Override

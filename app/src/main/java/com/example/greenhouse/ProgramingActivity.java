@@ -22,6 +22,10 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.greenhouse.additionalClasses.LampItem;
 import com.example.greenhouse.data_base.LampEntity;
+import com.example.greenhouse.web_socket.WebSocketManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -29,6 +33,7 @@ import java.util.List;
 
 public class ProgramingActivity extends AppCompatActivity {
     private static final String TAG = "Programming Activity";
+    private static final Logger log = LoggerFactory.getLogger(ProgramingActivity.class);
     private ProgramingViewModel viewModel;
     Boolean uniteFlag = false;
     Button btn_unite;
@@ -55,6 +60,7 @@ public class ProgramingActivity extends AppCompatActivity {
 
         viewModel = new androidx.lifecycle.ViewModelProvider(this).get(ProgramingViewModel.class);
         viewModel.initDatabase(MainPreferences.TotalShelf);
+        viewModel.setLampsForOneShelf(getResources().getInteger(R.integer.lamps_for_one_shelf));
 
         viewModel.getLampsForShelf(shelf_number).observe(this, lampEntities -> {
             // Цей код спрацює, коли дані прийдуть з бази
@@ -137,7 +143,6 @@ public class ProgramingActivity extends AppCompatActivity {
 
             lamp.getTvLampNum().setText(String.valueOf(real_id));
 
-
             if (i % columnCount == 1) {
                 // Віддзеркалення для парних рядків/стовпчиків (залежно від вашої логіки)
                 itemView.setScaleX(-1f);
@@ -197,8 +202,6 @@ public class ProgramingActivity extends AppCompatActivity {
                         viewModel.saveAllLamps(batchUpdateList);
 
                     } else {
-                        // === РЕЖИМ ОКРЕМО ===
-                        // Зберігаємо тільки одну поточну лампу
                         LampEntity entity = (LampEntity) lamp.getLampView().getTag();
                         if (entity != null) {
                             entity.blueValue = currentBlue;
@@ -206,8 +209,9 @@ public class ProgramingActivity extends AppCompatActivity {
 
                             changeLampColor(currentBlue, currentRed, lamp.getLampView());
 
-                            // Зберігаємо одну
                             viewModel.updateLamp(entity);
+
+                            WebSocketManager.getInstance().sendToAll(viewModel.getLampJsonString(entity));
                         }
                     }
                 }
@@ -234,13 +238,10 @@ public class ProgramingActivity extends AppCompatActivity {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    // Отримуємо поточні значення, які виставив користувач
                     int currentBlue = lamp.getSbBlue().getProgress();
                     int currentRed = lamp.getSbRed().getProgress();
 
                     if (uniteFlag) {
-                        // === РЕЖИМ СПІЛЬНО ===
-                        // Створюємо список для збереження
                         List<LampEntity> batchUpdateList = new ArrayList<>();
 
                         // Проходимо по ВСІХ лампах на екрані
@@ -251,22 +252,17 @@ public class ProgramingActivity extends AppCompatActivity {
                             if (entity != null) {
                                 // Оновлюємо дані в об'єкті Entity новими значеннями
                                 entity.blueValue = currentBlue;
-                                entity.redValue = currentRed; // Червоний теж має синхронізуватися
+                                entity.redValue = currentRed;
 
-                                // Додаємо в список на відправку
                                 batchUpdateList.add(entity);
 
-                                // Оновлюємо візуал (колір лампочки на екрані)
                                 changeLampColor(currentBlue, currentRed, item.getLampView());
                             }
                         }
 
-                        // Відправляємо ВЕСЬ список в базу одним запитом
                         viewModel.saveAllLamps(batchUpdateList);
 
                     } else {
-                        // === РЕЖИМ ОКРЕМО ===
-                        // Зберігаємо тільки одну поточну лампу
                         LampEntity entity = (LampEntity) lamp.getLampView().getTag();
                         if (entity != null) {
                             entity.blueValue = currentBlue;
@@ -274,8 +270,10 @@ public class ProgramingActivity extends AppCompatActivity {
 
                             changeLampColor(currentBlue, currentRed, lamp.getLampView());
 
-                            // Зберігаємо одну
                             viewModel.updateLamp(entity);
+
+                            WebSocketManager.getInstance().sendToAll(viewModel.getLampJsonString(entity));
+
                         }
                     }
                 }
@@ -347,5 +345,6 @@ public class ProgramingActivity extends AppCompatActivity {
 
         }
     }
+
 
 }
