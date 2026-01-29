@@ -28,6 +28,10 @@ public class ProgramingViewModel extends AndroidViewModel {
         repository.updateLamp(lamp);
     }
 
+    public void saveAllLamps(List<LampEntity> lamps) {
+        repository.updateAllLamps(lamps);
+    }
+
     // Запустити перевірку на створення бази
     public void initDatabase(int totalShelves) {
         repository.initDataIfNeeded(totalShelves, MainPreferences.NumberOfLampsForOneShelf);

@@ -119,9 +119,10 @@ public class ProgramingActivity extends AppCompatActivity {
         int rowCount = gridLayout.getRowCount();
         int totalCount = columnCount * rowCount;
 
-        /// Цикл заповнення!
-        // Цикл заповнення!
-        // Цикл заповнення сітки
+        /// Цикл заповнення
+        /// Цикл заповнення
+        /// Цикл заповнення
+
         for (int i = 0; i < totalCount; i++) {
             View itemView = inflater.inflate(R.layout.item_light_change, gridLayout, false);
             int real_id = i + 1;
@@ -130,6 +131,7 @@ public class ProgramingActivity extends AppCompatActivity {
             lamps.add(lamp);
 
             lamp.getTvLampNum().setText(String.valueOf(real_id));
+
 
             if (i % columnCount == 1) {
                 // Віддзеркалення для парних рядків/стовпчиків (залежно від вашої логіки)
@@ -166,24 +168,49 @@ public class ProgramingActivity extends AppCompatActivity {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    Log.d(TAG, "Blue stop. Shelf " + shelf_number + ", Lamp " + real_id);
-
-                    LampEntity entity = (LampEntity) lamp.getLampView().getTag();
-                    if (entity != null) {
-                        // Оновлюємо дані в об'єкті
-                        entity.blueValue = lamp.getSbBlue().getProgress();
-                        entity.redValue = lamp.getSbRed().getProgress();
-
-                        // Відправляємо в базу
-                        viewModel.updateLamp(entity);
-                    }
+                    // Отримуємо поточні значення, які виставив користувач
+                    int currentBlue = lamp.getSbBlue().getProgress();
+                    int currentRed = lamp.getSbRed().getProgress();
 
                     if (uniteFlag) {
+                        // === РЕЖИМ СПІЛЬНО ===
+                        // Створюємо список для збереження
+                        List<LampEntity> batchUpdateList = new ArrayList<>();
+
+                        // Проходимо по ВСІХ лампах на екрані
                         for (LampItem item : lamps) {
-                            changeLampColor(item.getSbBlue().getProgress(), item.getSbRed().getProgress(), item.getLampView());
+                            // Дістаємо Entity, прив'язану до цієї лампи
+                            LampEntity entity = (LampEntity) item.getLampView().getTag();
+
+                            if (entity != null) {
+                                // Оновлюємо дані в об'єкті Entity новими значеннями
+                                entity.blueValue = currentBlue;
+                                entity.redValue = currentRed; // Червоний теж має синхронізуватися
+
+                                // Додаємо в список на відправку
+                                batchUpdateList.add(entity);
+
+                                // Оновлюємо візуал (колір лампочки на екрані)
+                                changeLampColor(currentBlue, currentRed, item.getLampView());
+                            }
                         }
+
+                        // Відправляємо ВЕСЬ список в базу одним запитом
+                        viewModel.saveAllLamps(batchUpdateList);
+
                     } else {
-                        changeLampColor(lamp.getSbBlue().getProgress(), lamp.getSbRed().getProgress(), lamp.getLampView());
+                        // === РЕЖИМ ОКРЕМО ===
+                        // Зберігаємо тільки одну поточну лампу
+                        LampEntity entity = (LampEntity) lamp.getLampView().getTag();
+                        if (entity != null) {
+                            entity.blueValue = currentBlue;
+                            entity.redValue = currentRed;
+
+                            changeLampColor(currentBlue, currentRed, lamp.getLampView());
+
+                            // Зберігаємо одну
+                            viewModel.updateLamp(entity);
+                        }
                     }
                 }
             });
@@ -209,24 +236,49 @@ public class ProgramingActivity extends AppCompatActivity {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    Log.d(TAG, "Red stop. Shelf " + shelf_number + ", Lamp " + real_id);
-
-                    LampEntity entity = (LampEntity) lamp.getLampView().getTag();
-                    if (entity != null) {
-                        // Оновлюємо дані в об'єкті
-                        entity.blueValue = lamp.getSbBlue().getProgress();
-                        entity.redValue = lamp.getSbRed().getProgress();
-
-                        // Відправляємо в базу
-                        viewModel.updateLamp(entity);
-                    }
+                    // Отримуємо поточні значення, які виставив користувач
+                    int currentBlue = lamp.getSbBlue().getProgress();
+                    int currentRed = lamp.getSbRed().getProgress();
 
                     if (uniteFlag) {
+                        // === РЕЖИМ СПІЛЬНО ===
+                        // Створюємо список для збереження
+                        List<LampEntity> batchUpdateList = new ArrayList<>();
+
+                        // Проходимо по ВСІХ лампах на екрані
                         for (LampItem item : lamps) {
-                            changeLampColor(item.getSbBlue().getProgress(), item.getSbRed().getProgress(), item.getLampView());
+                            // Дістаємо Entity, прив'язану до цієї лампи
+                            LampEntity entity = (LampEntity) item.getLampView().getTag();
+
+                            if (entity != null) {
+                                // Оновлюємо дані в об'єкті Entity новими значеннями
+                                entity.blueValue = currentBlue;
+                                entity.redValue = currentRed; // Червоний теж має синхронізуватися
+
+                                // Додаємо в список на відправку
+                                batchUpdateList.add(entity);
+
+                                // Оновлюємо візуал (колір лампочки на екрані)
+                                changeLampColor(currentBlue, currentRed, item.getLampView());
+                            }
                         }
+
+                        // Відправляємо ВЕСЬ список в базу одним запитом
+                        viewModel.saveAllLamps(batchUpdateList);
+
                     } else {
-                        changeLampColor(lamp.getSbBlue().getProgress(), lamp.getSbRed().getProgress(), lamp.getLampView());
+                        // === РЕЖИМ ОКРЕМО ===
+                        // Зберігаємо тільки одну поточну лампу
+                        LampEntity entity = (LampEntity) lamp.getLampView().getTag();
+                        if (entity != null) {
+                            entity.blueValue = currentBlue;
+                            entity.redValue = currentRed;
+
+                            changeLampColor(currentBlue, currentRed, lamp.getLampView());
+
+                            // Зберігаємо одну
+                            viewModel.updateLamp(entity);
+                        }
                     }
                 }
             });
@@ -282,25 +334,19 @@ public class ProgramingActivity extends AppCompatActivity {
     }
 
     private void updateUIWithData(List<LampEntity> dataFromDb) {
-        // dataFromDb - це список з бази (Entity)
-        // lamps - це ваш список візуальних елементів (LampItem)
-
         if (lamps.size() != dataFromDb.size()) return; // Захист
 
         for (int i = 0; i < lamps.size(); i++) {
             LampItem uiLamp = lamps.get(i);
             LampEntity dbLamp = dataFromDb.get(i);
 
-            // Зберігаємо ID з бази в UI об'єкт (можна додати поле id в LampItem,
-            // або використовувати tag, щоб знати кого оновлювати)
             uiLamp.getLampView().setTag(dbLamp);
-
-            // Оновлюємо повзунки (це викличе ваші Listeners!)
-            // Щоб уникнути зациклення (update -> listener -> update),
-            // можна тимчасово зняти лісенери або перевіряти fromUser.
 
             uiLamp.getSbBlue().setProgress(dbLamp.blueValue);
             uiLamp.getSbRed().setProgress(dbLamp.redValue);
+
+            changeLampColor(dbLamp.blueValue, dbLamp.redValue, uiLamp.getLampView());
+
         }
     }
 

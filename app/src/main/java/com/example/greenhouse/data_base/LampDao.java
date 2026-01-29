@@ -16,6 +16,8 @@ public interface LampDao {
 
     @Update
     void update (LampEntity lamp);
+    @Update
+    void updateAll(List<LampEntity> lamps);
 
     @Query("SELECT * FROM lamps_table WHERE shelfId = :shelfId ORDER BY lampNumber ASC")
     LiveData<List<LampEntity>> getLampsByShelf(int shelfId);

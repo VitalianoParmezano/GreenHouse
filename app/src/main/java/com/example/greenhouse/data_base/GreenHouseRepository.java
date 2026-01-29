@@ -23,6 +23,11 @@ public class GreenHouseRepository {
             lampDao.update(lamp);
         });
     }
+    public void updateAllLamps(List<LampEntity> lamps) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            lampDao.updateAll(lamps);
+        });
+    }
 
     public void initDataIfNeeded(int shelfCount, int lampsPerShelf) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
