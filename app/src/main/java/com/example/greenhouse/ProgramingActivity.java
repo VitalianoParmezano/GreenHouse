@@ -200,6 +200,7 @@ public class ProgramingActivity extends AppCompatActivity {
 
                         // Відправляємо ВЕСЬ список в базу одним запитом
                         viewModel.saveAllLamps(batchUpdateList);
+                        WebSocketManager.getInstance().sendToAll(viewModel.getLampJsonString(batchUpdateList));
 
                     } else {
                         LampEntity entity = (LampEntity) lamp.getLampView().getTag();
@@ -261,6 +262,8 @@ public class ProgramingActivity extends AppCompatActivity {
                         }
 
                         viewModel.saveAllLamps(batchUpdateList);
+                        WebSocketManager.getInstance().sendToAll(viewModel.getLampJsonString(batchUpdateList));
+
 
                     } else {
                         LampEntity entity = (LampEntity) lamp.getLampView().getTag();
