@@ -40,6 +40,7 @@ dependencies {
 
     implementation ("androidx.lifecycle:lifecycle-livedata:2.6.2")
 
+    implementation ("org.java-websocket:Java-WebSocket:1.6.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
