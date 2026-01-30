@@ -10,30 +10,39 @@ import java.net.InetSocketAddress;
 
 public class MyWebSocketServer extends WebSocketServer {
     private final static String TAG = "MyWebSocketServer";
+    private WebSocketManager.StatusListener statusListener;
+
+    public MyWebSocketServer(int port, OnMessageListener onMessageListener, WebSocketManager.StatusListener statusListener) {
+        super(new InetSocketAddress(port));
+        this.onMessageListener = onMessageListener;
+        this.statusListener = statusListener;
+    }
+
     public interface OnMessageListener {
         void onNewMessage(String text);
+
     }
 
-    private OnMessageListener listener;
-
-    public MyWebSocketServer(int port, OnMessageListener listener) {
-        super(new InetSocketAddress(port));
-        this.listener = listener;
-    }
+    private OnMessageListener onMessageListener;
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         Log.d(TAG, "Клієнт підключився: " + conn.getRemoteSocketAddress());
+
+        statusListener.onStatusChanged("З'єднання встановлено");
+
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         Log.d(TAG, "Клієнт відключився");
+        statusListener.onStatusChanged("З'єднання втрачено");
+
     }
 
     @Override
     public void onMessage(WebSocket conn, String message) {
-        if (listener != null) listener.onNewMessage(message);
+        if (onMessageListener != null) onMessageListener.onNewMessage(message);
     }
 
     @Override

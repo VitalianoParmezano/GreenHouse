@@ -10,7 +10,6 @@ import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
 
-import com.example.greenhouse.web_socket.WebSocketManager;
 import com.example.greenhouse.R;
 
 public class WebSocketService extends Service {
@@ -26,20 +25,36 @@ public class WebSocketService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // Створення сповіщення
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("WebSocket Server")
-                .setContentText("Сервер теплиці працює")
-                .setSmallIcon(android.R.drawable.stat_sys_upload)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build();
-
-        startForeground(NOTIFICATION_ID, notification);
+        // Запускаємо сервіс з початковим сповіщенням
+        startForeground(NOTIFICATION_ID, buildNotification("Сервер запущено"));
 
         int port = getResources().getInteger(R.integer.server_port);
-        WebSocketManager.getInstance().startServer(port);
+
+        // Передаємо callback або налаштовуємо слухача в WebSocketManager,
+        // щоб він міг викликати оновлення тексту.
+        WebSocketManager.getInstance().startServer(port, this::updateNotification);
 
         return START_STICKY;
+    }
+
+    // Метод для оновлення існуючого сповіщення
+    private void updateNotification(String statusText) {
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (manager != null) {
+            manager.notify(NOTIFICATION_ID, buildNotification(statusText));
+        }
+    }
+
+    // Створення об'єкта сповіщення
+    private Notification buildNotification(String contentText) {
+        return new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("GreenHouse сервер")
+                .setContentText(contentText)
+                .setSmallIcon(R.drawable.server_is_running)
+                .setPriority(NotificationCompat.PRIORITY_LOW) // LOW достатньо для фонових служб
+                .setOngoing(true)  // Забороняє видалення сповіщення
+                .setOnlyAlertOnce(true) // Щоб телефон не вібрував при кожному оновленні тексту
+                .build();
     }
 
     @Override
@@ -66,4 +81,7 @@ public class WebSocketService extends Service {
             }
         }
     }
+
+
+
 }

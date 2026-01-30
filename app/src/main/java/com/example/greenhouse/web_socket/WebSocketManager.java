@@ -15,11 +15,11 @@ public class WebSocketManager {
         return instance;
     }
 
-    public void startServer(int port) {
+    public void startServer(int port, StatusListener statusListener) {
         if (server == null) {
             server = new MyWebSocketServer(port, message -> {
                 Log.d("WS_Manager", "Отримано: " + message);
-            });
+            }, statusListener);
             server.setReuseAddr(true);
             server.setConnectionLostTimeout(10); // Корисно для стабільності
             server.start();
@@ -45,5 +45,9 @@ public class WebSocketManager {
             Log.d("WebSocketManager", "Надсилаю: " + message);
             server.broadcast(message);
         }
+    }
+
+    public interface StatusListener {
+        void onStatusChanged(String status);
     }
 }
