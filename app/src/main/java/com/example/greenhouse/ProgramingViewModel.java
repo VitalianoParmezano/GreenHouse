@@ -35,7 +35,6 @@ public class ProgramingViewModel extends AndroidViewModel {
         return repository.getLampsByShelf(shelfId);
     }
 
-    // Метод для Activity: Збережи зміни
     public void updateLamp(LampEntity lamp) {
         repository.updateLamp(lamp);
     }
@@ -86,11 +85,8 @@ public class ProgramingViewModel extends AndroidViewModel {
                 json.put("red", lamp.redValue);
                 json.put("blue", lamp.blueValue);
 
-                // Додаємо готовий об'єкт у StringBuilder
                 result.append(json.toString());
 
-                // Якщо це не остання лампа, додаємо перенос рядка (або пробіл)
-                // Це замінить коми і дозволить серверу/клієнту читати об'єкти по черзі
                 if (i < lampList.size() - 1) {
                     result.append("\n");
                 }

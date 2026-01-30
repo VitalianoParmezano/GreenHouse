@@ -36,7 +36,6 @@ public class GreenHouseRepository {
     public void initDataIfNeeded(int shelfCount, int lampsPerShelf) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             if (lampDao.getCount() == 0) {
-                // База пуста! Створюємо лампи для всіх стелажів
                 for (int shelf = 1; shelf <= shelfCount; shelf++) {
                     for (int lamp = 1; lamp <= lampsPerShelf; lamp++) {
                         LampEntity newLamp = new LampEntity(shelf, lamp, 0, 0);

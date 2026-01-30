@@ -34,10 +34,8 @@ public class WebSocketService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();
 
-        // Важливо: для Android 14+ додайте type у маніфест!
         startForeground(NOTIFICATION_ID, notification);
 
-        // Отримуємо порт із ресурсів через контекст сервісу
         int port = getResources().getInteger(R.integer.server_port);
         WebSocketManager.getInstance().startServer(port);
 

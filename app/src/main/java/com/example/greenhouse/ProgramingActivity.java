@@ -143,7 +143,7 @@ public class ProgramingActivity extends AppCompatActivity {
             lamp.getTvLampNum().setText(String.valueOf(real_id));
 
             if (i % columnCount == 1) {
-                // Віддзеркалення для парних рядків/стовпчиків (залежно від вашої логіки)
+                // Віддзеркалення для парних рядків/стовпчиків
                 itemView.setScaleX(-1f);
 
                 // Перевертаємо текст назад, щоб він читався нормально
@@ -161,7 +161,7 @@ public class ProgramingActivity extends AppCompatActivity {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     lamp.getTvBlue().setText(progress + " %");
 
-                    // ЛОГІКА "СПІЛЬНО": Синхронізуємо інші
+                    // ЛОГІКА "СПІЛЬНО": Синхронізація інших
                     if (uniteFlag && fromUser) {
                         for (LampItem otherLamp : lamps) {
                             if (otherLamp != lamp) {
@@ -177,7 +177,7 @@ public class ProgramingActivity extends AppCompatActivity {
 
                 @Override
                 public void onStopTrackingTouch(SeekBar seekBar) {
-                    // Отримуємо поточні значення, які виставив користувач
+                    // Отримую поточні значення, які виставив користувач
                     int currentBlue = lamp.getSbBlue().getProgress();
                     int currentRed = lamp.getSbRed().getProgress();
 
@@ -197,7 +197,7 @@ public class ProgramingActivity extends AppCompatActivity {
                             }
                         }
 
-                        // Відправляємо ВЕСЬ список в базу одним запитом
+                        // Відправляю список в базу одним запитом
                         viewModel.saveAllLamps(batchUpdateList);
                         WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(batchUpdateList));
 
@@ -244,13 +244,11 @@ public class ProgramingActivity extends AppCompatActivity {
                     if (uniteFlag) {
                         List<LampEntity> batchUpdateList = new ArrayList<>();
 
-                        // Проходимо по ВСІХ лампах на екрані
+                        // Проходжу по ВСІХ лампах на екрані
                         for (LampItem item : lamps) {
-                            // Дістаємо Entity, прив'язану до цієї лампи
                             LampEntity entity = (LampEntity) item.getLampView().getTag();
 
                             if (entity != null) {
-                                // Оновлюємо дані в об'єкті Entity новими значеннями
                                 entity.blueValue = currentBlue;
                                 entity.redValue = currentRed;
 
@@ -281,7 +279,7 @@ public class ProgramingActivity extends AppCompatActivity {
                 }
             });
 
-            // 5. Параметри розміщення в Grid
+            // Параметри розміщення в Grid
             GridLayout.LayoutParams params = new GridLayout.LayoutParams();
             params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 10f);
             params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
@@ -302,7 +300,7 @@ public class ProgramingActivity extends AppCompatActivity {
             GradientDrawable shape = (GradientDrawable) background;
             shape.mutate();
 
-            int minLevel = 85;
+            int minLevel = getResources().getInteger(R.integer.base_lvl_color_for_lampview);
             int range = 255 - minLevel;
             //Формула: База + (Відсоток * Доступний_Діапазон / 100)
             int r = minLevel + (redPercent * range) / 100;

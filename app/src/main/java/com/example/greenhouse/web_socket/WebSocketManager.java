@@ -17,7 +17,6 @@ public class WebSocketManager {
 
     public void startServer(int port) {
         if (server == null) {
-            // Використовуємо порт, переданий із сервісу
             server = new MyWebSocketServer(port, message -> {
                 Log.d("WS_Manager", "Отримано: " + message);
             });
@@ -31,7 +30,7 @@ public class WebSocketManager {
     public void stopServer() {
         if (server != null) {
             try {
-                server.stop(1000); // Даємо 1 секунду на чисте закриття
+                server.stop(1000); // Даю 1 секунду на чисте закриття
                 server = null;
                 Log.d("WS_Manager", "Сервер зупинено");
             } catch (InterruptedException e) {

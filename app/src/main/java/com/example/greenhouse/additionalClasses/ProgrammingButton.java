@@ -76,7 +76,7 @@
             float redEnd = redStart - (redValue / 100f) * redStart;
             canvas.drawRect(0, redEnd, width, redStart, paint);
 
-            // --- МАЛЮЄМО ПРОГРЕС (BLUE - знизу) ---
+            // --- ПРОГРЕС (BLUE - знизу) ---
             paint.setColor(getResources().getColor(R.color.soft_blue));
 
             // Початок синього: нижній край сірої плашки

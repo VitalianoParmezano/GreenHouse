@@ -64,12 +64,11 @@ public class MainActivity extends AppCompatActivity {
         viewModel.getAllLamps().observe(this, lampEntities -> {
             if (lampEntities == null || lampEntities.isEmpty()) return;
 
-            Log.d("DEBUG", "onCreate: test");
-            // 1. Очищаємо перед оновленням
+            // 1. Очищаюмо перед оновленням
             mainGrid.removeAllViews();
 
-            // 2. Логіка групування по стелажах (shelfId)
-            // Використовуємо Map для підрахунку суми blueValue для кожного стелажа
+            // Логіка групування по стелажах (shelfId)
+            // Використовую Map для підрахунку суми відсотків для кожного стелажа
             java.util.Map<Integer, Integer> shelfSumsBlue = new java.util.HashMap<>();
             java.util.Map<Integer, Integer> shelfSumsRed = new java.util.HashMap<>();
 
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             for (Integer shelfId : shelfSumsBlue.keySet()) {
                 ProgrammingButton btn = new ProgrammingButton(this);
 
-                // Рахуємо середнє (сума / кількість ламп на стелажі)
+                // Рахую середнє (сума / кількість ламп на стелажі)
                 int avgBlue = shelfSumsBlue.get(shelfId) / getResources().getInteger(R.integer.lamps_for_one_shelf);
                 int avgRed = shelfSumsRed.get(shelfId) / getResources().getInteger(R.integer.lamps_for_one_shelf);
 

@@ -3,11 +3,12 @@
     <dimen name="seekbar_progress_height">40dp</dimen>
     <dimen name="seekbar_thumb_height">40dp</dimen>
     <dimen name="lamp_size">60dp</dimen>
+    <dimen name="text_on_programming_btn_size">25sp</dimen>
 
+    <integer name="base_lvl_color_for_lampview">85</integer>
     <integer name="server_port">8888</integer>
     <integer name="lamps_for_one_shelf">8</integer> //Парне має бути
     <integer name="total_lamps">28</integer>         //Парне має бути
 
-    <dimen name="text_on_programming_btn_size">25sp</dimen>
 
 </resources>
