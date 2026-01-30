@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             for (Integer shelfId : shelfSumsBlue.keySet()) {
                 ProgrammingButton btn = new ProgrammingButton(this);
 
-                // Рахую середнє (сума / кількість ламп на стелажі)
+                // Рахую середнє
                 int avgBlue = shelfSumsBlue.get(shelfId) / getResources().getInteger(R.integer.lamps_for_one_shelf);
                 int avgRed = shelfSumsRed.get(shelfId) / getResources().getInteger(R.integer.lamps_for_one_shelf);
 

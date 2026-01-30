@@ -91,6 +91,7 @@ public class ProgramingViewModel extends AndroidViewModel {
                 json.put("red", lamp.redValue);
                 json.put("blue", lamp.blueValue);
 
+                // Додаємо готовий об'єкт у StringBuilder
                 result.append(json.toString());
 
 
