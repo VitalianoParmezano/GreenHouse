@@ -22,12 +22,16 @@ import com.example.greenhouse.additionalClasses.ProgrammingButton;
 import com.example.greenhouse.data_base.LampEntity;
 import com.example.greenhouse.web_socket.WebSocketService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.random.RandomGenerator;
 
 public class MainActivity extends AppCompatActivity {
+    private static final Logger log = LoggerFactory.getLogger(MainActivity.class);
     MainActivityViewModel viewModel;
     GridLayout mainGrid;
 
@@ -55,10 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         mainGrid = findViewById(R.id.main_grid);
-
-        int columnCount = mainGrid.getColumnCount();
-        int rowCount = mainGrid.getRowCount();
-
+        mainGrid.setColumnCount(getResources().getInteger(R.integer.total_lamps)/2);
 
         viewModel.getAllLamps().observe(this, lampEntities -> {
             if (lampEntities == null || lampEntities.isEmpty()) return;
@@ -71,22 +72,20 @@ public class MainActivity extends AppCompatActivity {
             // Використовуємо Map для підрахунку суми blueValue для кожного стелажа
             java.util.Map<Integer, Integer> shelfSumsBlue = new java.util.HashMap<>();
             java.util.Map<Integer, Integer> shelfSumsRed = new java.util.HashMap<>();
-            java.util.Map<Integer, Integer> shelfCounts = new java.util.HashMap<>();
 
             for (LampEntity lamp : lampEntities) {
                 int shelf = lamp.shelfId;
                 shelfSumsBlue.put(shelf, shelfSumsBlue.getOrDefault(shelf, 0) + lamp.blueValue);
-                shelfSumsRed.put(shelf, shelfSumsBlue.getOrDefault(shelf, 0) + lamp.redValue);
-                shelfCounts.put(shelf, shelfCounts.getOrDefault(shelf, 0) + 1);
+                shelfSumsRed.put(shelf, shelfSumsRed.getOrDefault(shelf, 0) + lamp.redValue);
             }
 
-            // 3. Створюємо одну кнопку для кожного знайденого стелажа
+            // Створюю одну кнопку для кожного стелажа
             for (Integer shelfId : shelfSumsBlue.keySet()) {
                 ProgrammingButton btn = new ProgrammingButton(this);
 
                 // Рахуємо середнє (сума / кількість ламп на стелажі)
-                int avgBlue = shelfSumsBlue.get(shelfId) / shelfCounts.get(shelfId);
-                int avgRed = shelfSumsRed.get(shelfId) / shelfCounts.get(shelfId);
+                int avgBlue = shelfSumsBlue.get(shelfId) / getResources().getInteger(R.integer.lamps_for_one_shelf);
+                int avgRed = shelfSumsRed.get(shelfId) / getResources().getInteger(R.integer.lamps_for_one_shelf);
 
                 btn.setText(String.valueOf(shelfId));
                 btn.setBlue(avgBlue);

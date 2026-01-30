@@ -114,8 +114,6 @@ public class ProgramingActivity extends AppCompatActivity {
         });
 
 
-        Log.d(TAG, "onCreate: index is: " + shelf_number);
-
         Button btn_back = findViewById(R.id.btn_programming_back);
         btn_back.setOnClickListener(v -> finish());
 
@@ -123,7 +121,9 @@ public class ProgramingActivity extends AppCompatActivity {
         tv_shelf_number.setText(MessageFormat.format("Стелаж {0}", shelf_number));
 
         // Робота з сіткою
+        // Якщо треба більше, тоді створювати RecycleView
         GridLayout gridLayout = findViewById(R.id.grid_programing);
+        gridLayout.setRowCount(getResources().getInteger(R.integer.lamps_for_one_shelf)/2);
         LayoutInflater inflater = LayoutInflater.from(this);
 
         int columnCount = gridLayout.getColumnCount();
