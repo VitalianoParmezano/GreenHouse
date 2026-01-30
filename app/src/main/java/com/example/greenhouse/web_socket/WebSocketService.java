@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -82,6 +83,19 @@ public class WebSocketService extends Service {
         }
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        Log.d("WebSocketService", "onTaskRemoved: Зупинка серверу");
 
+        WebSocketManager.getInstance().stopServer();
 
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (manager != null) {
+            manager.cancel(NOTIFICATION_ID);
+        }
+
+        stopSelf();
+
+        super.onTaskRemoved(rootIntent);
+    }
 }
