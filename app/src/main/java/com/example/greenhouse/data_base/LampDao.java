@@ -22,6 +22,9 @@ public interface LampDao {
     @Query("SELECT * FROM lamps_table WHERE shelfId = :shelfId ORDER BY lampNumber ASC")
     LiveData<List<LampEntity>> getLampsByShelf(int shelfId);
 
+    @Query("SELECT * FROM lamps_table")
+    LiveData<List<LampEntity>> getAllLamps();
+
     @Query("SELECT COUNT(*) FROM lamps_table")
     int getCount();
 

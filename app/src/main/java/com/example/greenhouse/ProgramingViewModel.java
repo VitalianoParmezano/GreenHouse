@@ -21,7 +21,6 @@ import java.util.List;
 
 public class ProgramingViewModel extends AndroidViewModel {
     private int lamps_for_one_shelf;
-    private static final Logger log = LoggerFactory.getLogger(ProgramingViewModel.class);
     private GreenHouseRepository repository;
 
     public ProgramingViewModel(@NonNull Application application) {

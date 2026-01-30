@@ -7,4 +7,6 @@
     <integer name="server_port">8888</integer>
     <integer name="lamps_for_one_shelf">8</integer>
 
+    <dimen name="text_on_programming_btn_size">25sp</dimen>
+
 </resources>

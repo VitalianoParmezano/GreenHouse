@@ -18,6 +18,10 @@ public class GreenHouseRepository {
         return lampDao.getLampsByShelf(shelfId);
     }
 
+    public LiveData<List<LampEntity>> getAllLamps(){
+        return lampDao.getAllLamps();
+    }
+
     public void updateLamp(LampEntity lamp) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
             lampDao.update(lamp);

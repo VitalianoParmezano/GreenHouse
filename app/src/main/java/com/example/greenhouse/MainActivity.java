@@ -15,7 +15,12 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.greenhouse.additionalClasses.ProgrammingButton;
 import com.example.greenhouse.web_socket.WebSocketService;
+
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.random.RandomGenerator;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -48,11 +53,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Цикл створення кнопок
         for (int i = 0; i < totalButtons; i++) {
-            Button btn = new Button(this);
+            ProgrammingButton btn = new ProgrammingButton(this);
 
             // 1. Налаштування вигляду
             btn.setText(String.valueOf(i + 1));
-            btn.setBackgroundColor(Color.LTGRAY); // Сірий колір для старту
 
             // Зберігаємо ID або індекс кнопки в тег, щоб потім знати, хто це
             btn.setTag(i);
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             // Обробка натискання
             btn.setOnClickListener(v -> {
                 Button clickedBtn = (Button) v;
-                btn.setTextColor(R.color.text_color);
+                //btn.setTextColor(R.color.text_color);
                 int index = (int) clickedBtn.getTag();
 
 
