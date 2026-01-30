@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +13,6 @@ import android.widget.GridLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -104,6 +102,7 @@ public class ProgramingActivity extends AppCompatActivity {
                 }
 
                 viewModel.saveAllLamps(batchUpdateList);
+                WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(batchUpdateList));
             }
         });
 
@@ -200,7 +199,7 @@ public class ProgramingActivity extends AppCompatActivity {
 
                         // Відправляємо ВЕСЬ список в базу одним запитом
                         viewModel.saveAllLamps(batchUpdateList);
-                        WebSocketManager.getInstance().sendToAll(viewModel.getLampJsonString(batchUpdateList));
+                        WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(batchUpdateList));
 
                     } else {
                         LampEntity entity = (LampEntity) lamp.getLampView().getTag();
@@ -212,7 +211,7 @@ public class ProgramingActivity extends AppCompatActivity {
 
                             viewModel.updateLamp(entity);
 
-                            WebSocketManager.getInstance().sendToAll(viewModel.getLampJsonString(entity));
+                            WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(entity));
                         }
                     }
                 }
@@ -262,7 +261,7 @@ public class ProgramingActivity extends AppCompatActivity {
                         }
 
                         viewModel.saveAllLamps(batchUpdateList);
-                        WebSocketManager.getInstance().sendToAll(viewModel.getLampJsonString(batchUpdateList));
+                        WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(batchUpdateList));
 
 
                     } else {
@@ -275,7 +274,7 @@ public class ProgramingActivity extends AppCompatActivity {
 
                             viewModel.updateLamp(entity);
 
-                            WebSocketManager.getInstance().sendToAll(viewModel.getLampJsonString(entity));
+                            WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(entity));
 
                         }
                     }

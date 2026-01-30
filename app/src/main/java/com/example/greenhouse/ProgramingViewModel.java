@@ -103,10 +103,6 @@ public class ProgramingViewModel extends AndroidViewModel {
         return result.toString();
     }
 
-    public void sendLamp(String s){
-        repository.sendLampData(s);
-    }
-
 
 
 }

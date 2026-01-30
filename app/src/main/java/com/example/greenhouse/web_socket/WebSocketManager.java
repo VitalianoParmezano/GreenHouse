@@ -41,7 +41,7 @@ public class WebSocketManager {
         }
     }
 
-    public void sendToAll(String message) {
+    public void sendToAllClients(String message) {
         if (server != null) {
             Log.d("WebSocketManager", "Надсилаю: " + message);
             server.broadcast(message);

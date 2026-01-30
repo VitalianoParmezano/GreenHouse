@@ -46,7 +46,4 @@ public class GreenHouseRepository {
             }
         });
     }
-
-    public void sendLampData(String s) {
-    }
 }
