@@ -102,7 +102,7 @@ public class ProgramingActivity extends AppCompatActivity {
                 }
 
                 viewModel.saveAllLamps(batchUpdateList);
-                WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(batchUpdateList));
+                WebSocketManager.getInstance().sendToAllClients(viewModel.getShelfJsonString(batchUpdateList.get(0)));
             }
         });
 
@@ -199,7 +199,7 @@ public class ProgramingActivity extends AppCompatActivity {
 
                         // Відправляю список в базу одним запитом
                         viewModel.saveAllLamps(batchUpdateList);
-                        WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(batchUpdateList));
+                        WebSocketManager.getInstance().sendToAllClients(viewModel.getShelfJsonString(batchUpdateList.get(0)));
 
                     } else {
                         LampEntity entity = (LampEntity) lamp.getLampView().getTag();
@@ -259,7 +259,7 @@ public class ProgramingActivity extends AppCompatActivity {
                         }
 
                         viewModel.saveAllLamps(batchUpdateList);
-                        WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(batchUpdateList));
+                        WebSocketManager.getInstance().sendToAllClients(viewModel.getShelfJsonString(batchUpdateList.get(0)));
 
 
                     } else {

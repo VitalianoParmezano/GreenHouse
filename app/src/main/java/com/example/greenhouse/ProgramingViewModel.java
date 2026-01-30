@@ -10,13 +10,9 @@ import androidx.lifecycle.LiveData;
 import com.example.greenhouse.data_base.GreenHouseRepository;
 import com.example.greenhouse.data_base.LampEntity;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProgramingViewModel extends AndroidViewModel {
@@ -55,7 +51,10 @@ public class ProgramingViewModel extends AndroidViewModel {
         JSONObject json = new JSONObject();
 
         try {
-            json.put("rack", (lamp.shelfId-1) * lamps_for_one_shelf + lamp.lampNumber);
+            //json.put("rack", (lamp.shelfId-1) * lamps_for_one_shelf + lamp.lampNumber);
+            json.put("rack", lamp.shelfId);
+            json.put("fixture", lamp.lampNumber);
+
 //            json.put("rack", lamp.shelfId);       // Номер стелажу
 //            json.put("lamp", lamp.lampNumber);    // Номер лампи (або lamp.position, якщо у вас є окреме поле для порядку)
             json.put("red", lamp.redValue);     // Відсоток червоного
@@ -69,28 +68,32 @@ public class ProgramingViewModel extends AndroidViewModel {
         return json.toString();
     }
 
-    public String getLampJsonString(List<LampEntity> lampList) {
-        if (lampList == null || lampList.isEmpty()) return "";
+    /*
+    * {
+  "rack": 1,
+  "fixture": 2,
+  "red": 0,
+  "blue": 50
+}*/
+
+    public String getShelfJsonString(LampEntity lamp) {
+        if (lamp == null) return "";
 
         StringBuilder result = new StringBuilder();
 
         try {
-            for (int i = 0; i < lampList.size(); i++) {
-                LampEntity lamp = lampList.get(i);
                 JSONObject json = new JSONObject();
 
-                int rackNumber = (lamp.shelfId - 1) * lamps_for_one_shelf + lamp.lampNumber;
+                //int rackNumber = (lamp.shelfId - 1) * lamps_for_one_shelf + lamp.lampNumber;
 
-                json.put("rack", rackNumber);
+                json.put("rack", lamp.shelfId);
+                json.put("fixture", 0);
                 json.put("red", lamp.redValue);
                 json.put("blue", lamp.blueValue);
 
                 result.append(json.toString());
 
-                if (i < lampList.size() - 1) {
-                    result.append("\n");
-                }
-            }
+
         } catch (JSONException e) {
             Log.e("Programming View Model", "Error: " + e);
             return "";
