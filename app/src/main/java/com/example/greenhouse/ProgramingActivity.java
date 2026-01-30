@@ -56,10 +56,10 @@ public class ProgramingActivity extends AppCompatActivity {
         });
 
         Intent intent = getIntent();
-        int shelf_number = intent.getIntExtra("index", -1) + 1;
+        int shelf_number = intent.getIntExtra("shelf_id", -1);
 
         viewModel = new androidx.lifecycle.ViewModelProvider(this).get(ProgramingViewModel.class);
-        viewModel.initDatabase(MainPreferences.TotalShelf);
+        //viewModel.initDatabase(getResources().getInteger(R.integer.total_lamps));
         viewModel.setLampsForOneShelf(getResources().getInteger(R.integer.lamps_for_one_shelf));
 
         viewModel.getLampsForShelf(shelf_number).observe(this, lampEntities -> {

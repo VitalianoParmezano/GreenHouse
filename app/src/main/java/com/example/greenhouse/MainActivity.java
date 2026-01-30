@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridLayout;
@@ -14,16 +15,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.greenhouse.additionalClasses.ProgrammingButton;
+import com.example.greenhouse.data_base.LampEntity;
 import com.example.greenhouse.web_socket.WebSocketService;
 
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.random.RandomGenerator;
 
 public class MainActivity extends AppCompatActivity {
-
+    MainActivityViewModel viewModel;
     GridLayout mainGrid;
 
     @Override
@@ -37,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        viewModel = new ViewModelProvider(this).get(MainActivityViewModel.class);
+        viewModel.initDatabase(getResources().getInteger(R.integer.total_lamps),
+                getResources().getInteger(R.integer.lamps_for_one_shelf));
+
         Intent server_intent = new Intent(this, WebSocketService.class);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startForegroundService(server_intent);
@@ -49,58 +58,63 @@ public class MainActivity extends AppCompatActivity {
 
         int columnCount = mainGrid.getColumnCount();
         int rowCount = mainGrid.getRowCount();
-        Integer totalButtons = columnCount * rowCount;
-
-        // Цикл створення кнопок
-        for (int i = 0; i < totalButtons; i++) {
-            ProgrammingButton btn = new ProgrammingButton(this);
-
-            // 1. Налаштування вигляду
-            btn.setText(String.valueOf(i + 1));
-
-            // Зберігаємо ID або індекс кнопки в тег, щоб потім знати, хто це
-            btn.setTag(i);
-
-            // 2. МАГІЯ РОЗМІЩЕННЯ (LayoutParams)
-            // Розраховуємо, в якому рядку і колонці має бути кнопка
-            int row = i / columnCount;
-            int col = i % columnCount;
-
-            GridLayout.LayoutParams params = new GridLayout.LayoutParams();
-
-            // Вказуємо позицію і ВАГУ (1.0f), щоб розтягнути кнопку
-            params.rowSpec = GridLayout.spec(row, 1.0f);
-            params.columnSpec = GridLayout.spec(col, 1.0f);
-
-            // Ширину і висоту ставимо 0, щоб працювала вага (розтягування)
-            params.width = 0;
-            params.height = 0;
-
-            // Відступи між кнопками
-            params.setMargins(5, 5, 5, 5);
-
-            btn.setLayoutParams(params);
-
-            // Обробка натискання
-            btn.setOnClickListener(v -> {
-                Button clickedBtn = (Button) v;
-                //btn.setTextColor(R.color.text_color);
-                int index = (int) clickedBtn.getTag();
 
 
-                // Початок нової активності
-                Intent intent = new Intent(MainActivity.this, ProgramingActivity.class);
-                intent.putExtra("index", index);
-                MainActivity.this.startActivity(intent);
-                // Тут твій код для відправки на STM32/ESP32
-            });
+        viewModel.getAllLamps().observe(this, lampEntities -> {
+            if (lampEntities == null || lampEntities.isEmpty()) return;
 
+            Log.d("DEBUG", "onCreate: test");
+            // 1. Очищаємо перед оновленням
+            mainGrid.removeAllViews();
 
-            // 4. Додаємо кнопку в сітку
-            mainGrid.addView(btn);
-        }
+            // 2. Логіка групування по стелажах (shelfId)
+            // Використовуємо Map для підрахунку суми blueValue для кожного стелажа
+            java.util.Map<Integer, Integer> shelfSumsBlue = new java.util.HashMap<>();
+            java.util.Map<Integer, Integer> shelfSumsRed = new java.util.HashMap<>();
+            java.util.Map<Integer, Integer> shelfCounts = new java.util.HashMap<>();
+
+            for (LampEntity lamp : lampEntities) {
+                int shelf = lamp.shelfId;
+                shelfSumsBlue.put(shelf, shelfSumsBlue.getOrDefault(shelf, 0) + lamp.blueValue);
+                shelfSumsRed.put(shelf, shelfSumsBlue.getOrDefault(shelf, 0) + lamp.redValue);
+                shelfCounts.put(shelf, shelfCounts.getOrDefault(shelf, 0) + 1);
+            }
+
+            // 3. Створюємо одну кнопку для кожного знайденого стелажа
+            for (Integer shelfId : shelfSumsBlue.keySet()) {
+                ProgrammingButton btn = new ProgrammingButton(this);
+
+                // Рахуємо середнє (сума / кількість ламп на стелажі)
+                int avgBlue = shelfSumsBlue.get(shelfId) / shelfCounts.get(shelfId);
+                int avgRed = shelfSumsRed.get(shelfId) / shelfCounts.get(shelfId);
+
+                btn.setText(String.valueOf(shelfId));
+                btn.setBlue(avgBlue);
+                btn.setRed(avgRed);
+
+                // Налаштування вигляду (LayoutParams)
+                GridLayout.LayoutParams params = new GridLayout.LayoutParams();
+                params.rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                params.columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f);
+                params.width = 0;
+                params.height = 300; // Фіксована висота для гарного вигляду
+                params.setMargins(10, 10, 10, 10);
+                btn.setLayoutParams(params);
+
+                // Клік на стелаж
+                btn.setOnClickListener(v -> {
+                    Intent intent = new Intent(MainActivity.this, ProgramingActivity.class);
+                    intent.putExtra("shelf_id", shelfId); // Передаємо ID стелажа
+                    startActivity(intent);
+                });
+
+                mainGrid.addView(btn);
+            }
+        });
+    }
+
     }
 
 
 
-    }
+

@@ -45,9 +45,9 @@ public class ProgramingViewModel extends AndroidViewModel {
     }
 
     // Запустити перевірку на створення бази
-    public void initDatabase(int totalShelves) {
-        repository.initDataIfNeeded(totalShelves, MainPreferences.NumberOfLampsForOneShelf);
-    }
+//    public void initDatabase(int totalShelves) {
+//        repository.initDataIfNeeded(totalShelves, getResource);
+//    }
 
     public String getLampJsonString(LampEntity lamp) {
         // Захист від пустих даних
