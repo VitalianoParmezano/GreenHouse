@@ -24,12 +24,12 @@
         android:id="@+id/dialogView_redColor_input_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:text="Червоний колір"
         android:layout_marginStart="24dp"
+        android:text="Червоний колір"
+        android:textSize="18sp"
         android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/dialogView_header_tv"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialogView_blueColor_tv" />
 
     <EditText
         android:id="@+id/dialog_redInput_et"
@@ -46,12 +46,12 @@
         android:id="@+id/dialogView_blueColor_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:text="Синій колір"
-        android:layout_marginTop="32dp"
         android:layout_marginStart="24dp"
-        app:layout_constraintTop_toBottomOf="@id/dialogView_redColor_input_tv"
-        app:layout_constraintStart_toStartOf="parent"/>
+        android:layout_marginTop="24dp"
+        android:text="Синій колір"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialogView_header_tv" />
 
     <EditText
         android:id="@+id/dialog_blueInput_et"
@@ -68,10 +68,10 @@
         android:layout_width="@dimen/lamp_size"
         android:layout_height="@dimen/lamp_size"
         android:background="@drawable/shape_lamp"
-        app:layout_constraintBottom_toBottomOf="@+id/dialog_blueInput_et"
+        app:layout_constraintBottom_toBottomOf="@+id/dialog_redInput_et"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/dialog_blueInput_et"
-        app:layout_constraintTop_toTopOf="@+id/dialog_redInput_et" />
+        app:layout_constraintTop_toTopOf="@+id/dialog_blueInput_et" />
 
     <TextView
         android:id="@+id/item_tv_lamp_number"

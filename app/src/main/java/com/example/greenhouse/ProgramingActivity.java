@@ -143,7 +143,43 @@ public class ProgramingActivity extends AppCompatActivity {
             lamps.add(lamp);
 
             lamp.getLampView().setOnClickListener(v -> {
-                DialogWindowManager.createDialogWindowInputPercent(ProgramingActivity.this, real_id);
+                LampEntity entity = (LampEntity) v.getTag();
+                if (entity == null) return;
+
+                DialogWindowManager.createDialogWindowInputPercent(ProgramingActivity.this, real_id, (red, blue) -> {
+                    lamp.getSbRed().setProgress(red);
+                    lamp.getSbBlue().setProgress(blue);
+                    lamp.getTvRed().setText(red + " %");
+                    lamp.getTvBlue().setText(blue + " %");
+
+                    changeLampColor(blue, red, lamp.getLampView());
+
+                    entity.redValue = red;
+                    entity.blueValue = blue;
+
+                    if (uniteFlag) {
+                        List<LampEntity> batchUpdateList = new ArrayList<>();
+                        for (LampItem item : lamps) {
+                            LampEntity le = (LampEntity) item.getLampView().getTag();
+                            if (le != null) {
+                                le.redValue = red;
+                                le.blueValue = blue;
+                                batchUpdateList.add(le);
+
+                                item.getSbRed().setProgress(red);
+                                item.getSbBlue().setProgress(blue);
+                                item.getTvRed().setText(red + " %");
+                                item.getTvBlue().setText(blue + " %");
+                                changeLampColor(blue, red, item.getLampView());
+                            }
+                        }
+                        viewModel.saveAllLamps(batchUpdateList);
+                        WebSocketManager.getInstance().sendToAllClients(viewModel.getShelfJsonString(batchUpdateList.get(0)));
+                    } else {
+                        viewModel.updateLamp(entity);
+                        WebSocketManager.getInstance().sendToAllClients(viewModel.getLampJsonString(entity));
+                    }
+                });
             });
 
             lamp.getTvLampNum().setText(String.valueOf(real_id));
