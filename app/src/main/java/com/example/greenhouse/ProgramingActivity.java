@@ -1,6 +1,7 @@
 package com.example.greenhouse;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -18,6 +19,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.greenhouse.additionalClasses.DialogWindowManager;
 import com.example.greenhouse.additionalClasses.LampItem;
 import com.example.greenhouse.data_base.LampEntity;
 import com.example.greenhouse.web_socket.WebSocketManager;
@@ -139,6 +141,10 @@ public class ProgramingActivity extends AppCompatActivity {
 
             LampItem lamp = new LampItem(itemView);
             lamps.add(lamp);
+
+            lamp.getLampView().setOnClickListener(v -> {
+                DialogWindowManager.createDialogWindowInputPercent(ProgramingActivity.this, real_id);
+            });
 
             lamp.getTvLampNum().setText(String.valueOf(real_id));
 
@@ -293,14 +299,15 @@ public class ProgramingActivity extends AppCompatActivity {
 
 
 
-    private void changeLampColor(int bluePercent, int redPercent, View lamp) {
+    public static void changeLampColor(int bluePercent, int redPercent, View lamp) {
         Drawable background = lamp.getBackground();
+        Context context = lamp.getContext();
 
         if (background instanceof GradientDrawable) {
             GradientDrawable shape = (GradientDrawable) background;
             shape.mutate();
 
-            int minLevel = getResources().getInteger(R.integer.base_lvl_color_for_lampview);
+            int minLevel = context.getResources().getInteger(R.integer.base_lvl_color_for_lampview);
             int range = 255 - minLevel;
             //Формула: База + (Відсоток * Доступний_Діапазон / 100)
             int r = minLevel + (redPercent * range) / 100;
@@ -310,6 +317,8 @@ public class ProgramingActivity extends AppCompatActivity {
             int g = minLevel;
 
             shape.setColor(Color.rgb(r, g, b));
+
+
         }
     }
 
