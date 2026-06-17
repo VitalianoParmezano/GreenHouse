@@ -34,14 +34,21 @@
         app:layout_constraintStart_toStartOf="parent"/>
 
 
-    <GridLayout
-        android:id="@+id/grid_programing"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"
         android:layout_marginTop="100dp"
-        android:rowCount="4"
-        android:columnCount="2"/>
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <GridLayout
+            android:id="@+id/grid_programing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:rowCount="4"
+            android:columnCount="2" />
+
+    </ScrollView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
